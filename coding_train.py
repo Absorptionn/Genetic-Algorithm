@@ -41,7 +41,7 @@ class Individual:
 
 
 def main():
-    target = "Hello World"
+    target = "To be or not to be."
     max_population = 1000
     generation = 1
 
@@ -54,7 +54,7 @@ def main():
 
         if population[0].fitness >= 1:
             break
-        print("".join(population[0].characters))
+        print(f"Generation: {generation}\tPhrase: {''.join(population[0].characters)}\tFitness: {population[0].fitness * 100:0.2f}%")
         
         new_generation = []
 
@@ -83,7 +83,7 @@ def main():
         
         generation += 1
     
-    print(f"Generation: {generation}\tPhrase: {''.join(population[0].characters)}\tFitness: {population[0].fitness}")
+    print(f"Generation: {generation}\tPhrase: {''.join(population[0].characters)}\tFitness: {population[0].fitness * 100}%")
 
 
 
