@@ -17,7 +17,7 @@ class Individual:
             if self_char == target_char:
                 fitness += 1
         fitness /= self.target_length
-        fitness **= 2
+        fitness **= 4
         return fitness
 
     def mate(self, partner) -> object:
@@ -39,6 +39,28 @@ class Individual:
             if (mutation_probability < self.mutation_rate):
                 self.characters[i] = random.choice(string.printable)
 
+# ? Way 2
+def select(population_weights):
+    selection_probability = random.random()
+    for i in range(len(population_weights)):
+        if selection_probability < population_weights[i].fitness:
+            return population_weights[i]
+        else:
+            selection_probability -= population_weights[i].fitness
+    return None
+
+def weight(individual, total_fitness):
+    individual.fitness /= total_fitness
+    return individual
+
+# ? Way 3
+def get_random(total_fitness, population):
+    selection_probability = random.uniform(0, total_fitness)
+    running_sum = 0
+    for i in range(len(population)):
+        running_sum += population[i].fitness
+        if running_sum > selection_probability:
+            return population[i]
 
 def main():
     target = "To be or not to be."
@@ -50,7 +72,7 @@ def main():
         population.append(Individual(target))
     
     while True:
-        population = sorted(population, key=lambda x: x.fitness, reverse=True)
+        population = sorted(population, key=lambda individual: individual.fitness, reverse=True)
 
         if population[0].fitness >= 1:
             break
@@ -58,23 +80,45 @@ def main():
         
         new_generation = []
 
-        # Select Parent
-        mating_pool = []
-        max_fitness = 0
-        for i in range(max_population):
-            if population[i].fitness > max_fitness:
-                max_fitness = population[i].fitness
+        # ? Way 1
+        # # Select Parent
+        # mating_pool = []
+        # max_fitness = 0
+        # for i in range(max_population):
+        #     if population[i].fitness > max_fitness:
+        #         max_fitness = population[i].fitness
+        
+        # for i in range(max_population):
+        #     fitness = (1 - 0) * (population[i].fitness - 0) / (max_fitness - 0) + 0
+        #     n = math.floor(fitness * 100)
+        #     for j in range(n):
+        #         mating_pool.append(population[i])
+
+        # # Mate Parents
+        # for i in range(max_population):
+        #     parent_a = mating_pool[random.randint(0, len(mating_pool)-1)]
+        #     parent_b = mating_pool[random.randint(0, len(mating_pool)-1)]
+        #     child = parent_a.mate(parent_b)
+        #     child.mutate()
+        #     new_generation.append(child)
+
+        # ? Way 2
+        # total_fitness = sum(population[i].fitness for i in range(max_population))
+        # weighted = list(map(lambda individual: weight(individual, total_fitness), population))
+        
+        # for i in range(max_population):
+        #     parent_a = select(weighted)
+        #     parent_b = select(weighted)
+        #     child = parent_a.mate(parent_b)
+        #     child.mutate()
+        #     new_generation.append(child)
+
+        # ? Way 3
+        total_fitness = sum(population[i].fitness for i in range(max_population))
         
         for i in range(max_population):
-            fitness = (1 - 0) * (population[i].fitness - 0) / (max_fitness - 0) + 0
-            n = math.floor(fitness * 100)
-            for i in range(n):
-                mating_pool.append(population[i])
-
-        # Mate Parents
-        for i in range(max_population):
-            parent_a = mating_pool[random.randint(0, len(mating_pool)-1)]
-            parent_b = mating_pool[random.randint(0, len(mating_pool)-1)]
+            parent_a = get_random(total_fitness, population)
+            parent_b = get_random(total_fitness, population)
             child = parent_a.mate(parent_b)
             child.mutate()
             new_generation.append(child)

@@ -83,8 +83,8 @@ class Population:
 
 
 def main():
-    target = "Hello World"
-    max_population = 100
+    target = "To be or not to be."
+    max_population = 1000
     population = Population(target, max_population)
 
     while True:
